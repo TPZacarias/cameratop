@@ -15,13 +15,6 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent" >
 
-    <EditText
-        android:id = "@+id/dataCaptaHora"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        app:layout_constraintBottom_toBottomOf = "@id/cameraVista"
-        />
-
     </androidx.camera.view.PreviewView >
     <ImageButton
         android:id="@+id/botaoCamera"
@@ -56,6 +49,19 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/flashLigado"
         tools:ignore="SpeakableTextPresentCheck" />
+    <ImageView
+        android:id="@+id/vistaReduzida"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        app:layout_constraintStart_toEndOf="@+id/flashDesligado"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="20sp"
+        android:layout_marginBottom="10sp"
+        />
+
+
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

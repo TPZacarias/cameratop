@@ -1,5 +1,6 @@
 package com.zacarias.camaratop
 
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.icu.text.SimpleDateFormat
 import android.net.Uri
@@ -14,6 +15,7 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.IntentCompat
 import com.zacarias.camaratop.databinding.ActivityMainBinding
 import java.io.File
 import java.time.LocalDateTime
@@ -26,6 +28,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var ligacaoCamara: ActivityMainBinding
     private var capturaImagem: ImageCapture? = null
     private lateinit var diretorioDeSaida: File
+    val telaRecebeImagem = TelaRecebeImagem()
+    var data:String = String()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,7 +69,9 @@ class MainActivity : AppCompatActivity() {
             botaoCamera.setOnClickListener {
                 tirarFoto()
             }
+
         }
+
     }
 
     private fun setData() {
@@ -75,7 +81,7 @@ class MainActivity : AppCompatActivity() {
             DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
         val captarHoraMain: LocalDateTime = LocalDateTime.now()
 
-        ligacaoCamara.dataCaptaHora.setText(dataFormatada.format(captarHoraMain).toString())
+        data = dataFormatada.format(captarHoraMain).toString()
     }
 
     private fun pegarDiretorioDeSaida(): File {
@@ -109,11 +115,6 @@ class MainActivity : AppCompatActivity() {
                 .format(System.currentTimeMillis()) + ".jpg"
         )
 
-        val previewBitmap = ligacaoCamara.cameraVista.bitmap
-
-        val bitmapInBytes = previewBitmap.toString().toByteArray()
-        arquivoFoto.appendBytes(bitmapInBytes)
-
         val opcaoSaida = ImageCapture
             .OutputFileOptions
             .Builder(arquivoFoto)
@@ -127,12 +128,27 @@ class MainActivity : AppCompatActivity() {
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                     Log.d(Constantes.TAG, "onImageSaved")
 
+                    ligacaoCamara.vistaReduzida.setImageURI(Uri.fromFile(arquivoFoto))
+
+                    ligacaoCamara.apply {
+                        vistaReduzida.setOnClickListener {
+                            abrirSegundatela()
+                        }
+                    }
+                    }
+
+                private fun abrirSegundatela() {
+
+                    val intencaoArquivo = Intent(this@MainActivity,TelaRecebeImagem::class.java)
+                    intencaoArquivo.putExtra("receber",arquivoFoto.toString())
+                    intencaoArquivo.putExtra("data",data)
+                    intencaoArquivo.putExtra("formato",Constantes.FORMATO_NOME_ARQUIVO)
+                    startActivity(intencaoArquivo)
+
                     Toast.makeText(
                         this@MainActivity,
                         " IMAGEM SALVA! ${Uri.fromFile(arquivoFoto)}",
-                        Toast.LENGTH_LONG
-                    )
-                        .show()
+                        Toast.LENGTH_LONG).show()
                 }
 
                 override fun onError(exception: ImageCaptureException) {
